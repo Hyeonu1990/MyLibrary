@@ -67,7 +67,7 @@ Shader "Custom/MyToonShaderURP"
 
 			struct v2f
 			{
-				float4 pos : SV_POSITION; // ???? ?????? UNITY_TRANSFER_FOG, TRANSFER_SHADOW ???? ???? ??????
+				float4 pos : SV_POSITION;
 				float3 worldPos : TEXCOORD0;
 				float4 uv_texcoord : TEXCOORD1;
 				float4 worldNormal : TEXCOORD2;
@@ -179,7 +179,7 @@ Shader "Custom/MyToonShaderURP"
 				float _glossiness;
 				float _rimAmount;
 				float _rimThreshold;
-				half4 _ambientColor; // ?????? ???? Ambient 
+				half4 _ambientColor; // 커스텀 추가 Ambient 
 				half4 _specularColor;
 				half4 _rimColor;
 				float _reflect;
@@ -232,17 +232,15 @@ Shader "Custom/MyToonShaderURP"
 				///Toon
 				float4 col = 0;
 				{
-					//???? ?????? ?????? ?????? ?????? ??????
 					float shadow = MainLightRealtimeShadow(i.shadowCoord);
 					float lightIntensity = _LightSmoothStep ? smoothstep(0, 0.01, NdotL * shadow) : NdotL * shadow;
 					//float4 light = lightIntensity * _MainLightColor;
 
-					//?????? : Ramp?????? ???? ???? ?????? ???? ???????? ??????
 					float halfLambert = NdotL * 0.5f + 0.5f;
 					halfLambert *= shadow;
 					half4 _toonRamp = _UseRampMap ? texCUBE(_ToonShade, mapNormal) : tex2D(_RampTex, float2(halfLambert, 0));
 					float4 light = _MainLightColor * (_UseRampTex ? _toonRamp : lightIntensity);
-					//light.rgb += ShadeSH9(half4(_LightAffectedByNormal ? mapNormal : worldNormal, 1.0)) * _toonRamp; //Light Probe, Ambient ????	
+					//light.rgb += ShadeSH9(half4(_LightAffectedByNormal ? mapNormal : worldNormal, 1.0)) * _toonRamp; //Light Probe, Ambient 적용	
 					
 					float specularIntensity = pow(NdotH * (_UseRampTex ? halfLambert : lightIntensity), _glossiness * _glossiness);
 					float specularIntensitySmooth = smoothstep(0.005, 0.01, specularIntensity);
